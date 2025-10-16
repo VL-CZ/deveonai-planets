@@ -58,4 +58,5 @@ db/
 
 # VS
 .vs/
-
+*.user
+*.suo
