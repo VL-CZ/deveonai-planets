@@ -18,7 +18,35 @@ namespace Planets.Controllers
         // GET: Planets
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Planets.ToListAsync());
+            var stringIds = Request.Query.Select(x => x.Value.First());
+
+            List<Guid> guids = stringIds
+                .Select(s =>
+                {
+                    _ = Guid.TryParse(s, out var g);
+                    return g;
+                })
+                .Where(g => g != Guid.Empty)
+                .ToList();
+
+            var planets = new List<Planet>();
+
+            if (guids.Any())
+            {
+                planets = await _context.Planets
+                    .Where(p => guids.All(id => p.PropertyValues.Any(val => val.Id == id)))
+                    .ToListAsync();
+            }
+            else
+            {
+                planets = await _context.Planets.ToListAsync();
+            }
+
+
+            ViewData["Properties"] = await _context.PlanetProperties.Include(v => v.PossibleValues).OrderBy(v => v.Name).ToListAsync();
+            ViewData["Selected"] = guids;
+
+            return View(planets);
         }
 
         // GET: Planets/Details/5
