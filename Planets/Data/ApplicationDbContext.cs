@@ -13,5 +13,7 @@ namespace Planets.Data
         public DbSet<Planet> Planets { get; set; }
 
         public DbSet<PlanetProperty> PlanetProperties { get; set; }
+
+        public DbSet<PlanetPropertyValue> PlanetPropertyValues { get; set; }
     }
 }

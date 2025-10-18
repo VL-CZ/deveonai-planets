@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Hosting;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Planets.Models
@@ -9,5 +10,6 @@ namespace Planets.Models
 
         public required string Name { get; set; }
 
+        public ICollection<PlanetPropertyValue> PossibleValues { get; } = [];
     }
 }

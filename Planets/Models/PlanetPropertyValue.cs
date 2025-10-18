@@ -7,7 +7,8 @@ namespace Planets.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
-        public required string Name { get; set; }
+        public required string Value { get; set; }
 
+        public PlanetProperty PlanetProperty { get; set; } = null!;
     }
 }
