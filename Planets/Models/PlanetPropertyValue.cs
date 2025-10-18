@@ -9,6 +9,6 @@ namespace Planets.Models
 
         public required string Value { get; set; }
 
-        public PlanetProperty PlanetProperty { get; set; } = null!;
+        public virtual PlanetProperty PlanetProperty { get; set; } = null!;
     }
 }

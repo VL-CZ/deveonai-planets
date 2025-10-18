@@ -10,6 +10,6 @@ namespace Planets.Models
 
         public required string Name { get; set; }
 
-        public ICollection<PlanetPropertyValue> PossibleValues { get; } = [];
+        public virtual ICollection<PlanetPropertyValue> PossibleValues { get; } = [];
     }
 }

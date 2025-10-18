@@ -14,7 +14,8 @@ namespace Planets
 
             // Add EF Core DbContext (PostgreSQL)
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseLazyLoadingProxies()
+                .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 

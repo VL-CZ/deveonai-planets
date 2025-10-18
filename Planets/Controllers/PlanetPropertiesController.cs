@@ -34,7 +34,9 @@ namespace Planets
             }
 
             var planetProperty = await _context.PlanetProperties
+                .Include(p => p.PossibleValues)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (planetProperty == null)
             {
                 return NotFound();
@@ -148,6 +150,43 @@ namespace Planets
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: PlanetProperties/AddValue/5
+        [HttpPost, ActionName("AddValue")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddPropertyValue(Guid id, [Bind("Value")] PlanetPropertyValue propertyValue)
+        {
+            var planetProperty = await _context.PlanetProperties.FindAsync(id);
+
+            if (planetProperty is null)
+            {
+                return NotFound();
+            }
+
+            planetProperty.PossibleValues.Add(propertyValue);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        // POST: PlanetProperties/Delete/5
+        [HttpPost, ActionName("DeleteValue")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePropertyValue(Guid id)
+        {
+            var propertyValue = await _context.PlanetPropertyValues.FindAsync(id);
+
+            if (propertyValue is null)
+            {
+                return NotFound();
+            }
+
+            var propertyId = propertyValue.PlanetProperty.Id;
+            _context.PlanetPropertyValues.Remove(propertyValue);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Details), new { id = propertyId });
         }
 
         private bool PlanetPropertyExists(Guid id)

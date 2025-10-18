@@ -18,10 +18,37 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
+
+        <h5>Possible values</h5>
+        <div>
+            <div>
+                @foreach (var value in Model.PossibleValues)
+                {
+                    <form asp-action="DeleteValue" asp-route-id="@value.Id">
+                        <div>@value.Value</div>
+                        <input type="submit" value="Delete" class="btn btn-danger" />
+                    </form>
+                }
+            </div>
+
+            <div>
+                <form asp-action="AddValue" asp-route-id="@Model.Id" method="post">
+                    <div class="form-group">
+                        <label for="Value" class="control-label">New Value</label>
+                        <input type="text" name="Value" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Add Value" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 </div>
 
