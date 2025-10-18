@@ -22,6 +22,30 @@
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
+
+        <h5>Properties</h5>
+        <div>
+            @foreach (var propertyValue in Model.PropertyValues)
+            {
+                <form asp-action="DeleteValue" asp-route-id="@propertyValue.Id">
+                    <div>@propertyValue.PlanetProperty.Id @propertyValue.Value</div>
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+                </form>
+            }
+        </div>
+
+        <div>
+            <form asp-action="AddValue" asp-route-id="@Model.Id" method="post">
+                <div class="form-group">
+                    <label for="Value" class="control-label">New Value</label>
+                    <input type="text" name="Value" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Add Value" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+
     </div>
 </div>
 

@@ -9,5 +9,6 @@ namespace Planets.Models
 
         public required string Name { get; set; }
 
+        public virtual ICollection<PlanetPropertyValue> PropertyValues { get; set; } = [];
     }
 }

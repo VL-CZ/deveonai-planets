@@ -10,5 +10,7 @@ namespace Planets.Models
         public required string Value { get; set; }
 
         public virtual PlanetProperty PlanetProperty { get; set; } = null!;
+
+        public virtual ICollection<Planet> Planets { get; set; } = [];
     }
 }

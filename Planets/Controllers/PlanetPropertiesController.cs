@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Planets.Data;
 using Planets.Models;
 
-namespace Planets
+namespace Planets.Controllers
 {
     public class PlanetPropertiesController : Controller
     {
