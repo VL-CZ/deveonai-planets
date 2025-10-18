@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Edit";
+
+    var allProperties = (ICollection<PlanetPropertyValue>)ViewData["Properties"];
 }
 
 <h1>Edit</h1>
@@ -27,15 +29,32 @@
         <div>
             @foreach (var propertyValue in Model.PropertyValues)
             {
-                <form asp-action="DeleteValue" asp-route-id="@propertyValue.Id">
-                    <div>@propertyValue.PlanetProperty.Id @propertyValue.Value</div>
+                <form asp-action="DeleteProperty" asp-route-id="@Model.Id">
+                    <input type="hidden" name="propertyValueId" value="@propertyValue.Id" />
+                    <div><b>@propertyValue.PlanetProperty.Name:</b> @propertyValue.Value</div>
                     <input type="submit" value="Delete" class="btn btn-danger" />
                 </form>
             }
         </div>
 
         <div>
-            <form asp-action="AddValue" asp-route-id="@Model.Id" method="post">
+            <form asp-action="AddProperty" asp-route-id="@Model.Id" method="post">
+                <div class="form-group">
+                    <select name="propertyValueId" class="form-select">
+                        @foreach (var property in allProperties)
+                        {
+                            <option value="@property.Id">
+                                @property.PlanetProperty.Name: @property.Value
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Add Property" class="btn btn-primary" />
+                </div>
+            </form>
+
+            @* <form asp-action="AddValue" asp-route-id="@Model.Id" method="post">
                 <div class="form-group">
                     <label for="Value" class="control-label">New Value</label>
                     <input type="text" name="Value" class="form-control" />
@@ -43,7 +62,7 @@
                 <div class="form-group">
                     <input type="submit" value="Add Value" class="btn btn-primary" />
                 </div>
-            </form>
+            </form> *@
         </div>
 
     </div>
@@ -54,5 +73,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

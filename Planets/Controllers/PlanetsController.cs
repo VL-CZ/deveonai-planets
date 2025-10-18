@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Planets.Data;
 using Planets.Models;
 
@@ -79,6 +75,9 @@ namespace Planets.Controllers
             {
                 return NotFound();
             }
+
+            ViewData["Properties"] = await _context.PlanetPropertyValues.Include(v => v.PlanetProperty).OrderBy(v => v.PlanetProperty.Name).ToListAsync();
+
             return View(planet);
         }
 
@@ -148,6 +147,44 @@ namespace Planets.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: PlanetProperties/AddValue/5
+        [HttpPost, ActionName("AddProperty")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddProperty(Guid id, [FromForm] Guid propertyValueId)
+        {
+            var planet = await _context.Planets.FindAsync(id);
+            var propertyValue = await _context.PlanetPropertyValues.FindAsync(propertyValueId);
+
+            if (planet is null || propertyValue is null)
+            {
+                return NotFound();
+            }
+
+            planet.PropertyValues.Add(propertyValue);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        // POST: PlanetProperties/Delete/5
+        [HttpPost, ActionName("DeleteProperty")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProperty(Guid id, [FromForm] Guid propertyValueId)
+        {
+            var planet = await _context.Planets.FindAsync(id);
+            var propertyValue = await _context.PlanetPropertyValues.FindAsync(propertyValueId);
+
+            if (planet is null || propertyValue is null)
+            {
+                return NotFound();
+            }
+
+            planet.PropertyValues.Remove(propertyValue);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         private bool PlanetExists(Guid id)
