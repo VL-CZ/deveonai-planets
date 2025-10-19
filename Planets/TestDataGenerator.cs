@@ -1,10 +1,18 @@
-﻿using Planets.Data;
+﻿using NuGet.Packaging;
+using Planets.Data;
 using Planets.Models;
 
 namespace Planets
 {
     public class TestDataGenerator
     {
+        /// <summary>
+        /// Generates the test data and stores them in the DB.
+        /// </summary>
+        /// <remarks>
+        /// NOTE: All existing data in the DB are removed.
+        /// </remarks>
+        /// <param name="dbContext">The database context.</param>
         public static async Task GenerateTestDataAsync(ApplicationDbContext dbContext)
         {
             // Remove all existing data
@@ -19,32 +27,27 @@ namespace Planets
             var lifeProperty = new PlanetProperty { Name = "Life" };
 
             // Property values
-            var atmYes = new PlanetPropertyValue { Value = "Yes", PlanetProperty = atmosphereProperty };
-            var atmNo = new PlanetPropertyValue { Value = "No", PlanetProperty = atmosphereProperty };
-            atmosphereProperty.PossibleValues.Add(atmYes);
-            atmosphereProperty.PossibleValues.Add(atmNo);
+            var atmYes = new PlanetPropertyValue { Value = "Yes" };
+            var atmNo = new PlanetPropertyValue { Value = "No" };
 
-            var waterYes = new PlanetPropertyValue { Value = "Yes", PlanetProperty = waterProperty };
-            var waterNo = new PlanetPropertyValue { Value = "No", PlanetProperty = waterProperty };
-            waterProperty.PossibleValues.Add(waterYes);
-            waterProperty.PossibleValues.Add(waterNo);
+            var waterYes = new PlanetPropertyValue { Value = "Yes" };
+            var waterNo = new PlanetPropertyValue { Value = "No" };
 
-            var terrainRocky = new PlanetPropertyValue { Value = "Rocky", PlanetProperty = terrainProperty };
-            var terrainGas = new PlanetPropertyValue { Value = "Gas", PlanetProperty = terrainProperty };
-            var terrainIce = new PlanetPropertyValue { Value = "Ice", PlanetProperty = terrainProperty };
-            var terrainVolcanic = new PlanetPropertyValue { Value = "Volcanic", PlanetProperty = terrainProperty };
-            terrainProperty.PossibleValues.Add(terrainRocky);
-            terrainProperty.PossibleValues.Add(terrainGas);
-            terrainProperty.PossibleValues.Add(terrainIce);
-            terrainProperty.PossibleValues.Add(terrainVolcanic);
+            var terrainRocky = new PlanetPropertyValue { Value = "Rocky" };
+            var terrainGas = new PlanetPropertyValue { Value = "Gas" };
+            var terrainIce = new PlanetPropertyValue { Value = "Ice" };
+            var terrainVolcanic = new PlanetPropertyValue { Value = "Volcanic" };
 
-            var lifeNone = new PlanetPropertyValue { Value = "None", PlanetProperty = lifeProperty };
-            var lifeMicrobial = new PlanetPropertyValue { Value = "Microbial", PlanetProperty = lifeProperty };
-            var lifeHumans = new PlanetPropertyValue { Value = "Humans", PlanetProperty = lifeProperty };
-            var lifeAliens = new PlanetPropertyValue { Value = "Aliens", PlanetProperty = lifeProperty };
-            lifeProperty.PossibleValues.Add(lifeNone);
-            lifeProperty.PossibleValues.Add(lifeMicrobial);
-            lifeProperty.PossibleValues.Add(lifeHumans);
+            var lifeNone = new PlanetPropertyValue { Value = "None" };
+            var lifeMicrobial = new PlanetPropertyValue { Value = "Microbial" };
+            var lifeHumans = new PlanetPropertyValue { Value = "Humans" };
+            var lifeAliens = new PlanetPropertyValue { Value = "Aliens" };
+
+            // Assign values to properties
+            atmosphereProperty.PossibleValues.AddRange([atmYes, atmNo]);
+            waterProperty.PossibleValues.AddRange([waterYes, waterNo]);
+            terrainProperty.PossibleValues.AddRange([terrainRocky, terrainGas, terrainIce, terrainVolcanic]);
+            lifeProperty.PossibleValues.AddRange([lifeNone, lifeMicrobial, lifeHumans, lifeAliens]);
 
             // Planets (subset of properties)
             var planets = new List<Planet>
