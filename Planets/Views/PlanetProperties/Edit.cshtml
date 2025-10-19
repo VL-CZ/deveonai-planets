@@ -4,44 +4,51 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Edit Planet Property</h1>
 
-<h4>PlanetProperty</h4>
 <hr />
+
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="form-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group my-2">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
 
-        <h5>Possible values</h5>
-        <div>
+        <hr />
+
+        <h4>Edit Property Values</h4>
+        <ul class="list-group">
             @foreach (var value in Model.PossibleValues)
             {
-                <form asp-action="DeleteValue" asp-route-id="@value.Id">
-                    <div>@value.Value</div>
-                    <input type="submit" value="Delete" class="btn btn-danger" />
-                </form>
+                <li class="list-group-item">
+                    <form asp-action="DeleteValue" asp-route-id="@value.Id">
+                        <div>@value.Value</div>
+                        <input type="submit" value="Delete" class="btn btn-danger" />
+                    </form>
+                </li>
             }
-        </div>
+        </ul>
+
+        <hr />
+
+        <h4>Add New Property Value</h4>
 
         <div>
             <form asp-action="AddValue" asp-route-id="@Model.Id" method="post">
                 <div class="form-group">
-                    <label for="Value" class="control-label">New Value</label>
                     <input type="text" name="Value" class="form-control" />
                 </div>
-                <div class="form-group">
+                <div class="form-group my-2">
                     <input type="submit" value="Add Value" class="btn btn-primary" />
                 </div>
             </form>
