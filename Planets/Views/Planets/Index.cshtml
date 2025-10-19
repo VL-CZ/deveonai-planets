@@ -1,10 +1,7 @@
-﻿@model IEnumerable<Planets.Models.Planet>
+﻿@model Planets.ViewModels.PlanetListViewModel
 
 @{
     ViewData["Title"] = "Index";
-
-    var allProperties = (ICollection<PlanetProperty>)ViewData["Properties"];
-    var selectedGuids = (ICollection<Guid>)ViewData["Selected"];
 }
 
 <h1>Planets</h1>
@@ -20,14 +17,14 @@
 
             <form method="get" asp-action="Index" class="col-md-6">
 
-                @foreach (var property in allProperties)
+                @foreach (var property in Model.AllPlanetProperties)
                 {
                     <label for="@property.Id" class="form-label">@Html.DisplayFor(m => property.Name)</label>
                     <select name="@property.Name" class="form-select mb-2" id="@property.Id">
                         <option value="">-- Select Value --</option>
                         @foreach (var propertyValue in property.PossibleValues)
                         {
-                            var isSelected = selectedGuids.Contains(propertyValue.Id);
+                            var isSelected = Model.SelectedPropertyValueIds.Contains(propertyValue.Id);
 
                             @if (isSelected)
                             {
@@ -53,7 +50,7 @@
 <h4 class="my-2">Results</h4>
 <table class="table">
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Planets)
         {
             <tr>
                 <td>
@@ -65,7 +62,7 @@
             </tr>
         }
 
-        @if (!Model.Any())
+        @if (!Model.Planets.Any())
         {
             <tr><td>No results.</td></tr>
         }

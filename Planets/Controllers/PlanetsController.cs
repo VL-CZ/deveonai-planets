@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Planets.Data;
 using Planets.Models;
+using Planets.ViewModels;
 
 namespace Planets.Controllers
 {
@@ -41,11 +42,14 @@ namespace Planets.Controllers
                 planets = await _dbContext.Planets.ToListAsync();
             }
 
+            var viewModel = new PlanetListViewModel
+            {
+                Planets = planets,
+                AllPlanetProperties = await _dbContext.PlanetProperties.Include(v => v.PossibleValues).OrderBy(v => v.Name).ToListAsync(),
+                SelectedPropertyValueIds = guids
+            };
 
-            ViewData["Properties"] = await _dbContext.PlanetProperties.Include(v => v.PossibleValues).OrderBy(v => v.Name).ToListAsync();
-            ViewData["Selected"] = guids;
-
-            return View(planets);
+            return View(viewModel);
         }
 
         // GET: Planets/Details/5
@@ -57,7 +61,8 @@ namespace Planets.Controllers
             }
 
             var planet = await _dbContext.Planets
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FindAsync(id);
+
             if (planet == null)
             {
                 return NotFound();
@@ -103,9 +108,13 @@ namespace Planets.Controllers
                 return NotFound();
             }
 
-            ViewData["Properties"] = await _dbContext.PlanetPropertyValues.Include(v => v.PlanetProperty).OrderBy(v => v.PlanetProperty.Name).ToListAsync();
+            var viewModel = new EditPlanetViewModel
+            {
+                Planet = planet,
+                PropertyValuesToAdd = await _dbContext.PlanetPropertyValues.Include(v => v.PlanetProperty).OrderBy(v => v.PlanetProperty.Name).ToListAsync()
+            };
 
-            return View(planet);
+            return View(viewModel);
         }
 
         // POST: Planets/Edit/5
@@ -122,22 +131,9 @@ namespace Planets.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _dbContext.Update(planet);
-                    await _dbContext.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PlanetExists(planet.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _dbContext.Update(planet);
+                await _dbContext.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Details), new { id });
             }
             return View(planet);
@@ -152,7 +148,8 @@ namespace Planets.Controllers
             }
 
             var planet = await _dbContext.Planets
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FindAsync(id);
+
             if (planet == null)
             {
                 return NotFound();
@@ -212,11 +209,6 @@ namespace Planets.Controllers
 
             await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Details), new { id });
-        }
-
-        private bool PlanetExists(Guid id)
-        {
-            return _dbContext.Planets.Any(e => e.Id == id);
         }
     }
 }

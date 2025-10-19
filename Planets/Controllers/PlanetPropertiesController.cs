@@ -1,13 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Planets.Data;
 using Planets.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Threading.Tasks;
 
 namespace Planets.Controllers
 {
@@ -99,24 +93,12 @@ namespace Planets.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _dbContext.Update(planetProperty);
-                    await _dbContext.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PlanetPropertyExists(planetProperty.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _dbContext.Update(planetProperty);
+                await _dbContext.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Details), new { id });
             }
+
             return View(planetProperty);
         }
 
@@ -129,7 +111,8 @@ namespace Planets.Controllers
             }
 
             var planetProperty = await _dbContext.PlanetProperties
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FindAsync(id);
+
             if (planetProperty == null)
             {
                 return NotFound();
@@ -188,11 +171,6 @@ namespace Planets.Controllers
 
             await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Details), new { id = propertyId });
-        }
-
-        private bool PlanetPropertyExists(Guid id)
-        {
-            return _dbContext.PlanetProperties.Any(e => e.Id == id);
         }
     }
 }
