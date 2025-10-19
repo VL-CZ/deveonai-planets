@@ -19,6 +19,9 @@ namespace Planets.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 'POST: /GenerateTestData' - Generates test data
+        /// </summary>
         [HttpPost, ActionName("GenerateTestData")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> GenerateTestData()

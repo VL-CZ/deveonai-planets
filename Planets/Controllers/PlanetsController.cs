@@ -15,12 +15,15 @@ namespace Planets.Controllers
             _dbContext = dbContext;
         }
 
-        // GET: Planets
+        /// <summary>
+        /// 'GET: /Planets' - Displays list of all planets. The query params serve for filtering, 
+        /// the following format is used: (key - <see cref="PlanetProperty.Name"/>, value - <see cref="PlanetPropertyValue.Id"/>)
+        /// </summary>
         public async Task<IActionResult> Index()
         {
-            var stringIds = Request.Query.Select(x => x.Value.First());
+            var propertyValueIds = Request.Query.SelectMany(param => param.Value);
 
-            List<Guid> guids = stringIds
+            var propertyValueGuids = propertyValueIds
                 .Select(s =>
                 {
                     _ = Guid.TryParse(s, out var g);
@@ -31,13 +34,13 @@ namespace Planets.Controllers
 
             var planets = new List<Planet>();
 
-            if (guids.Any())
+            if (propertyValueGuids.Any()) // filtering -> select only matching planets
             {
                 planets = await _dbContext.Planets
-                    .Where(p => guids.All(id => p.PropertyValues.Any(val => val.Id == id)))
+                    .Where(p => propertyValueGuids.All(valueId => p.PropertyValues.Any(val => val.Id == valueId)))
                     .ToListAsync();
             }
-            else
+            else // no filtering -> return all planets
             {
                 planets = await _dbContext.Planets.ToListAsync();
             }
@@ -46,20 +49,18 @@ namespace Planets.Controllers
             {
                 Planets = planets,
                 AllPlanetProperties = await _dbContext.PlanetProperties.Include(v => v.PossibleValues).OrderBy(v => v.Name).ToListAsync(),
-                SelectedPropertyValueIds = guids
+                SelectedPropertyValueIds = propertyValueGuids
             };
 
             return View(viewModel);
         }
 
-        // GET: Planets/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        /// <summary>
+        /// 'GET: Planets/Details/{id}' - Displays planet detail.
+        /// </summary>
+        /// <param name="id">ID of the planet to get.</param>
+        public async Task<IActionResult> Details(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var planet = await _dbContext.Planets
                 .FindAsync(id);
 
@@ -71,22 +72,24 @@ namespace Planets.Controllers
             return View(planet);
         }
 
-        // GET: Planets/Create
+        /// <summary>
+        /// 'GET: Planets/Create' - Displays the 'create planet' page.
+        /// </summary>
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Planets/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// 'POST: Planets/Create' - Creates a planet and stores it into the DB.
+        /// </summary>
+        /// <param name="planet">The planet data to store.</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] Planet planet)
         {
             if (ModelState.IsValid)
             {
-                planet.Id = Guid.NewGuid();
                 _dbContext.Add(planet);
                 await _dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Details), new { id = planet.Id });
@@ -94,15 +97,14 @@ namespace Planets.Controllers
             return View(planet);
         }
 
-        // GET: Planets/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        /// <summary>
+        /// 'GET: Planets/Edit/5' - Displays the 'edit planet' page.
+        /// </summary>
+        /// <param name="id">ID of the planet to edit.</param>
+        public async Task<IActionResult> Edit(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var planet = await _dbContext.Planets.FindAsync(id);
+
             if (planet == null)
             {
                 return NotFound();
@@ -112,7 +114,7 @@ namespace Planets.Controllers
 
             var propertyValuesToAdd = await _dbContext.PlanetPropertyValues
                 .Include(v => v.PlanetProperty)
-                .Where(v => !addedPropertyValues.Contains(v.Id))
+                .Where(v => !addedPropertyValues.Contains(v.Id)) // exclude the already applied property values
                 .OrderBy(v => v.PlanetProperty.Name)
                 .ToListAsync();
 
@@ -148,13 +150,8 @@ namespace Planets.Controllers
         }
 
         // GET: Planets/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var planet = await _dbContext.Planets
                 .FindAsync(id);
 
