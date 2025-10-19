@@ -108,10 +108,18 @@ namespace Planets.Controllers
                 return NotFound();
             }
 
+            var addedPropertyValues = planet.PropertyValues.Select(v => v.Id).ToList();
+
+            var propertyValuesToAdd = await _dbContext.PlanetPropertyValues
+                .Include(v => v.PlanetProperty)
+                .Where(v => !addedPropertyValues.Contains(v.Id))
+                .OrderBy(v => v.PlanetProperty.Name)
+                .ToListAsync();
+
             var viewModel = new EditPlanetViewModel
             {
                 Planet = planet,
-                PropertyValuesToAdd = await _dbContext.PlanetPropertyValues.Include(v => v.PlanetProperty).OrderBy(v => v.PlanetProperty.Name).ToListAsync()
+                PropertyValuesToAdd = propertyValuesToAdd
             };
 
             return View(viewModel);

@@ -1,22 +1,31 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Planets.Models;
+using Planets.Data;
 using Planets.ViewModels;
+using System.Diagnostics;
 
 namespace Planets.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _dbContext;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext dbContext)
         {
-            _logger = logger;
+            _dbContext = dbContext;
         }
 
         public IActionResult Index()
         {
             return View();
+        }
+
+        [HttpPost, ActionName("GenerateTestData")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GenerateTestData()
+        {
+            await TestDataGenerator.GenerateTestDataAsync(_dbContext);
+
+            return Redirect("/Planets");
         }
 
         public IActionResult Privacy()
