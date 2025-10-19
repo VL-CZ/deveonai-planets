@@ -127,9 +127,11 @@ namespace Planets.Controllers
             return View(viewModel);
         }
 
-        // POST: Planets/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// 'POST: Planets/Edit/{id}' - Updates an existing planet and saves the changes to the DB.
+        /// </summary>
+        /// <param name="id">ID of the planet to edit.</param>
+        /// <param name="planet">The updated planet data.</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name")] Planet planet)
@@ -149,7 +151,11 @@ namespace Planets.Controllers
             return View(planet);
         }
 
-        // GET: Planets/Delete/5
+
+        /// <summary>
+        /// 'GET: Planets/Delete/{id}' - Displays the 'delete planet' confirmation page.
+        /// </summary>
+        /// <param name="id">ID of the planet to delete.</param>
         public async Task<IActionResult> Delete(Guid id)
         {
             var planet = await _dbContext.Planets
@@ -163,7 +169,11 @@ namespace Planets.Controllers
             return View(planet);
         }
 
-        // POST: Planets/Delete/5
+
+        /// <summary>
+        /// 'POST: Planets/Delete/{id}' - Confirms and performs deletion of the specified planet from the DB.
+        /// </summary>
+        /// <param name="id">ID of the planet to delete.</param>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -178,7 +188,12 @@ namespace Planets.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: PlanetProperties/AddValue/5
+
+        /// <summary>
+        /// 'POST: PlanetProperties/AddProperty/{id}' - adds a property value to the given planet.
+        /// </summary>
+        /// <param name="id">ID of the planet, to which the property value is added.</param>
+        /// <param name="propertyValueId">ID of the property value being added.</param>
         [HttpPost, ActionName("AddProperty")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProperty(Guid id, [FromForm] Guid propertyValueId)
@@ -197,7 +212,11 @@ namespace Planets.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        // POST: PlanetProperties/Delete/5
+        /// <summary>
+        /// 'POST: PlanetProperties/Delete/{id}' - removes a property value from the given planet.
+        /// </summary>
+        /// <param name="id">ID of the planet, from which the property value is removed.</param>
+        /// <param name="propertyValueId">ID of the property value being removed.</param>
         [HttpPost, ActionName("DeleteProperty")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProperty(Guid id, [FromForm] Guid propertyValueId)
