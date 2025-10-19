@@ -3,6 +3,9 @@ using Planets.Models;
 
 namespace Planets.Data
 {
+    /// <summary>
+    /// DB context for the application.
+    /// </summary>
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

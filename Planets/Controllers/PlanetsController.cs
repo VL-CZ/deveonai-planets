@@ -213,7 +213,7 @@ namespace Planets.Controllers
         }
 
         /// <summary>
-        /// 'POST: PlanetProperties/Delete/{id}' - removes a property value from the given planet.
+        /// 'POST: PlanetProperties/DeleteProperty/{id}' - removes a property value from the given planet.
         /// </summary>
         /// <param name="id">ID of the planet, from which the property value is removed.</param>
         /// <param name="propertyValueId">ID of the property value being removed.</param>

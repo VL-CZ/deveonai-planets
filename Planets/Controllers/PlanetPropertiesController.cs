@@ -14,20 +14,21 @@ namespace Planets.Controllers
             _dbContext = dbContext;
         }
 
-        // GET: PlanetProperties
+        /// <summary>
+        /// 'GET: /PlanetProperties' - Displays a list of all planet properties.
+        /// </summary>
         public async Task<IActionResult> Index()
         {
             return View(await _dbContext.PlanetProperties.ToListAsync());
         }
 
-        // GET: PlanetProperties/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
+        /// <summary>
+        /// 'GET: PlanetProperties/Details/{id}' - Displays details of a specific planet property, including its possible values.
+        /// </summary>
+        /// <param name="id">ID of the planet property to display.</param>
+        public async Task<IActionResult> Details(Guid id)
+        {
             var planetProperty = await _dbContext.PlanetProperties
                 .Include(p => p.PossibleValues)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -40,22 +41,26 @@ namespace Planets.Controllers
             return View(planetProperty);
         }
 
-        // GET: PlanetProperties/Create
+
+        /// <summary>
+        /// 'GET: PlanetProperties/Create' - Displays the 'create planet property' page.
+        /// </summary>
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: PlanetProperties/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+        /// <summary>
+        /// 'POST: PlanetProperties/Create' - Creates a new planet property and stores it in the DB.
+        /// </summary>
+        /// <param name="planetProperty">The planet property data to store.</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] PlanetProperty planetProperty)
         {
             if (ModelState.IsValid)
             {
-                planetProperty.Id = Guid.NewGuid();
                 _dbContext.Add(planetProperty);
                 await _dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Details), new { id = planetProperty.Id });
@@ -63,14 +68,13 @@ namespace Planets.Controllers
             return View(planetProperty);
         }
 
-        // GET: PlanetProperties/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
+        /// <summary>
+        /// 'GET: PlanetProperties/Edit/{id}' - Displays the 'edit planet property' page for the specified property.
+        /// </summary>
+        /// <param name="id">ID of the planet property to edit.</param>
+        public async Task<IActionResult> Edit(Guid id)
+        {
             var planetProperty = await _dbContext.PlanetProperties.FindAsync(id);
             if (planetProperty == null)
             {
@@ -79,9 +83,11 @@ namespace Planets.Controllers
             return View(planetProperty);
         }
 
-        // POST: PlanetProperties/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// 'POST: PlanetProperties/Edit/{id}' - Updates an existing planet property and saves the changes to the DB.
+        /// </summary>
+        /// <param name="id">ID of the planet property to edit.</param>
+        /// <param name="planetProperty">The updated planet property data.</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name")] PlanetProperty planetProperty)
@@ -102,14 +108,13 @@ namespace Planets.Controllers
             return View(planetProperty);
         }
 
-        // GET: PlanetProperties/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
+        /// <summary>
+        /// 'GET: PlanetProperties/Delete/{id}' - Displays the 'delete planet property' confirmation page.
+        /// </summary>
+        /// <param name="id">ID of the planet property to delete.</param>
+        public async Task<IActionResult> Delete(Guid id)
+        {
             var planetProperty = await _dbContext.PlanetProperties
                 .FindAsync(id);
 
@@ -121,7 +126,11 @@ namespace Planets.Controllers
             return View(planetProperty);
         }
 
-        // POST: PlanetProperties/Delete/5
+
+        /// <summary>
+        /// 'POST: PlanetProperties/Delete/{id}' - Confirms and performs deletion of the specified planet property from the DB.
+        /// </summary>
+        /// <param name="id">ID of the planet property to delete.</param>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -136,7 +145,12 @@ namespace Planets.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: PlanetProperties/AddValue/5
+
+        /// <summary>
+        /// 'POST: PlanetProperties/AddValue/{id}' - Adds a new property value to the specified planet property.
+        /// </summary>
+        /// <param name="id">ID of the planet property, to which the property value is added.</param>
+        /// <param name="propertyValue">The property value to add.</param>
         [HttpPost, ActionName("AddValue")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddPropertyValue(Guid id, [Bind("Value")] PlanetPropertyValue propertyValue)
@@ -154,7 +168,10 @@ namespace Planets.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        // POST: PlanetProperties/Delete/5
+        /// <summary>
+        /// 'POST: PlanetProperties/DeleteValue/{id}' - Deletes the specified planet property value.
+        /// </summary>
+        /// <param name="id">ID of the planet property value to delete.</param>
         [HttpPost, ActionName("DeleteValue")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePropertyValue(Guid id)
