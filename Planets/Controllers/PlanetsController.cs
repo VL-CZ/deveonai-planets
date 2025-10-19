@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Planets.Data;
 using Planets.Models;
 
@@ -8,11 +7,11 @@ namespace Planets.Controllers
 {
     public class PlanetsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _dbContext;
 
-        public PlanetsController(ApplicationDbContext context)
+        public PlanetsController(ApplicationDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
 
         // GET: Planets
@@ -33,17 +32,17 @@ namespace Planets.Controllers
 
             if (guids.Any())
             {
-                planets = await _context.Planets
+                planets = await _dbContext.Planets
                     .Where(p => guids.All(id => p.PropertyValues.Any(val => val.Id == id)))
                     .ToListAsync();
             }
             else
             {
-                planets = await _context.Planets.ToListAsync();
+                planets = await _dbContext.Planets.ToListAsync();
             }
 
 
-            ViewData["Properties"] = await _context.PlanetProperties.Include(v => v.PossibleValues).OrderBy(v => v.Name).ToListAsync();
+            ViewData["Properties"] = await _dbContext.PlanetProperties.Include(v => v.PossibleValues).OrderBy(v => v.Name).ToListAsync();
             ViewData["Selected"] = guids;
 
             return View(planets);
@@ -57,7 +56,7 @@ namespace Planets.Controllers
                 return NotFound();
             }
 
-            var planet = await _context.Planets
+            var planet = await _dbContext.Planets
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (planet == null)
             {
@@ -83,8 +82,8 @@ namespace Planets.Controllers
             if (ModelState.IsValid)
             {
                 planet.Id = Guid.NewGuid();
-                _context.Add(planet);
-                await _context.SaveChangesAsync();
+                _dbContext.Add(planet);
+                await _dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(planet);
@@ -98,13 +97,13 @@ namespace Planets.Controllers
                 return NotFound();
             }
 
-            var planet = await _context.Planets.FindAsync(id);
+            var planet = await _dbContext.Planets.FindAsync(id);
             if (planet == null)
             {
                 return NotFound();
             }
 
-            ViewData["Properties"] = await _context.PlanetPropertyValues.Include(v => v.PlanetProperty).OrderBy(v => v.PlanetProperty.Name).ToListAsync();
+            ViewData["Properties"] = await _dbContext.PlanetPropertyValues.Include(v => v.PlanetProperty).OrderBy(v => v.PlanetProperty.Name).ToListAsync();
 
             return View(planet);
         }
@@ -125,8 +124,8 @@ namespace Planets.Controllers
             {
                 try
                 {
-                    _context.Update(planet);
-                    await _context.SaveChangesAsync();
+                    _dbContext.Update(planet);
+                    await _dbContext.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -139,7 +138,7 @@ namespace Planets.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id });
             }
             return View(planet);
         }
@@ -152,7 +151,7 @@ namespace Planets.Controllers
                 return NotFound();
             }
 
-            var planet = await _context.Planets
+            var planet = await _dbContext.Planets
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (planet == null)
             {
@@ -167,13 +166,13 @@ namespace Planets.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var planet = await _context.Planets.FindAsync(id);
+            var planet = await _dbContext.Planets.FindAsync(id);
             if (planet != null)
             {
-                _context.Planets.Remove(planet);
+                _dbContext.Planets.Remove(planet);
             }
 
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -182,8 +181,8 @@ namespace Planets.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProperty(Guid id, [FromForm] Guid propertyValueId)
         {
-            var planet = await _context.Planets.FindAsync(id);
-            var propertyValue = await _context.PlanetPropertyValues.FindAsync(propertyValueId);
+            var planet = await _dbContext.Planets.FindAsync(id);
+            var propertyValue = await _dbContext.PlanetPropertyValues.FindAsync(propertyValueId);
 
             if (planet is null || propertyValue is null)
             {
@@ -192,7 +191,7 @@ namespace Planets.Controllers
 
             planet.PropertyValues.Add(propertyValue);
 
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Details), new { id });
         }
 
@@ -201,8 +200,8 @@ namespace Planets.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProperty(Guid id, [FromForm] Guid propertyValueId)
         {
-            var planet = await _context.Planets.FindAsync(id);
-            var propertyValue = await _context.PlanetPropertyValues.FindAsync(propertyValueId);
+            var planet = await _dbContext.Planets.FindAsync(id);
+            var propertyValue = await _dbContext.PlanetPropertyValues.FindAsync(propertyValueId);
 
             if (planet is null || propertyValue is null)
             {
@@ -211,13 +210,13 @@ namespace Planets.Controllers
 
             planet.PropertyValues.Remove(propertyValue);
 
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Details), new { id });
         }
 
         private bool PlanetExists(Guid id)
         {
-            return _context.Planets.Any(e => e.Id == id);
+            return _dbContext.Planets.Any(e => e.Id == id);
         }
     }
 }

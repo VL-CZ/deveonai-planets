@@ -1,4 +1,4 @@
-namespace Planets.Models
+namespace Planets.ViewModels
 {
     public class ErrorViewModel
     {

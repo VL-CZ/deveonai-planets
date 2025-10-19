@@ -7,51 +7,51 @@
     var selectedGuids = (ICollection<Guid>)ViewData["Selected"];
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h1>Planets</h1>
 
 <div>
-    <form method="get" asp-action="Index">
+    <div>
+        <button class="btn btn-light m-2" type="button" data-bs-toggle="collapse" data-bs-target="#filtersArea" aria-expanded="false" aria-controls="filtersArea">
+            Toggle Filters
+        </button>
+    </div>
+    <div class="collapse show" id="filtersArea">
+        <div class="card card-body">
 
-        @foreach (var property in allProperties)
-        {
-            <div>
-                @property.Name
-            </div>
-            <select name="@property.Name" class="form-select">
-                <option value="">-- Select Property --</option>
-                @foreach (var propertyValue in property.PossibleValues)
+            <form method="get" asp-action="Index" class="col-md-6">
+
+                @foreach (var property in allProperties)
                 {
-                    var isSelected = selectedGuids.Contains(propertyValue.Id);
+                    <label for="@property.Id" class="form-label">@Html.DisplayFor(m => property.Name)</label>
+                    <select name="@property.Name" class="form-select mb-2" id="@property.Id">
+                        <option value="">-- Select Value --</option>
+                        @foreach (var propertyValue in property.PossibleValues)
+                        {
+                            var isSelected = selectedGuids.Contains(propertyValue.Id);
 
-                    @if (isSelected)
-                    {
-                        <option value="@propertyValue.Id" selected>@propertyValue.Value</option>
-                    }
-                    else
-                    {
-                        <option value="@propertyValue.Id">@propertyValue.Value</option>
-                    }
+                            @if (isSelected)
+                            {
+                                <option value="@propertyValue.Id" selected>@propertyValue.Value</option>
+                            }
+                            else
+                            {
+                                <option value="@propertyValue.Id">@propertyValue.Value</option>
+                            }
+                        }
+                    </select>
                 }
-            </select>
-        }
 
-        <input type="submit" class="btn btn-primary" value="Filter" />
-    </form>
+                <input type="submit" class="btn btn-primary m-2" value="Filter" />
+                <a class="btn btn-light" asp-action="Index" role="button">Clear</a>
+            </form>
+        </div>
+    </div>
 </div>
 
+<hr />
+
+<h4 class="my-2">Results</h4>
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
     <tbody>
         @foreach (var item in Model)
         {
@@ -60,11 +60,18 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
                 </td>
             </tr>
         }
+
+        @if (!Model.Any())
+        {
+            <tr><td>No results.</td></tr>
+        }
     </tbody>
 </table>
+
+<p>
+    <a asp-action="Create">Create New Planet</a>
+</p>

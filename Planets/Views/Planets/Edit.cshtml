@@ -6,17 +6,16 @@
     var allProperties = (ICollection<PlanetPropertyValue>)ViewData["Properties"];
 }
 
-<h1>Edit</h1>
+<h1>Edit Planet</h1>
 
-<h4>Planet</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+            <div class="form-group my-2">
+                <label asp-for="Name" class="form-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
@@ -25,22 +24,29 @@
             </div>
         </form>
 
-        <h5>Properties</h5>
-        <div>
+        <hr />
+
+        <h4>Edit Planet Properties</h4>
+        <ul class="list-group">
             @foreach (var propertyValue in Model.PropertyValues)
             {
-                <form asp-action="DeleteProperty" asp-route-id="@Model.Id">
-                    <input type="hidden" name="propertyValueId" value="@propertyValue.Id" />
-                    <div><b>@propertyValue.PlanetProperty.Name:</b> @propertyValue.Value</div>
-                    <input type="submit" value="Delete" class="btn btn-danger" />
-                </form>
+                <li class="list-group-item">
+                    <form asp-action="DeleteProperty" asp-route-id="@Model.Id">
+                        <input type="hidden" name="propertyValueId" value="@propertyValue.Id" />
+                        <div><b>@propertyValue.PlanetProperty.Name:</b> @propertyValue.Value</div>
+                        <input type="submit" value="Delete" class="btn btn-danger my-2" />
+                    </form>
+                </li>
             }
-        </div>
+        </ul>
 
+        <hr />
+
+        <h4>Add New Property</h4>
         <div>
             <form asp-action="AddProperty" asp-route-id="@Model.Id" method="post">
                 <div class="form-group">
-                    <select name="propertyValueId" class="form-select">
+                    <select name="propertyValueId" class="form-select my-2">
                         @foreach (var property in allProperties)
                         {
                             <option value="@property.Id">
@@ -53,20 +59,11 @@
                     <input type="submit" value="Add Property" class="btn btn-primary" />
                 </div>
             </form>
-
-            @* <form asp-action="AddValue" asp-route-id="@Model.Id" method="post">
-                <div class="form-group">
-                    <label for="Value" class="control-label">New Value</label>
-                    <input type="text" name="Value" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Add Value" class="btn btn-primary" />
-                </div>
-            </form> *@
         </div>
-
     </div>
 </div>
+
+<hr />
 
 <div>
     <a asp-action="Index">Back to List</a>
