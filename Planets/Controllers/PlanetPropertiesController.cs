@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Planets.Data;
 using Planets.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.Threading.Tasks;
 
 namespace Planets.Controllers
 {
@@ -63,7 +64,7 @@ namespace Planets.Controllers
                 planetProperty.Id = Guid.NewGuid();
                 _dbContext.Add(planetProperty);
                 await _dbContext.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = planetProperty.Id });
             }
             return View(planetProperty);
         }

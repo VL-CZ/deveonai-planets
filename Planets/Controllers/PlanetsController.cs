@@ -84,7 +84,7 @@ namespace Planets.Controllers
                 planet.Id = Guid.NewGuid();
                 _dbContext.Add(planet);
                 await _dbContext.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = planet.Id });
             }
             return View(planet);
         }

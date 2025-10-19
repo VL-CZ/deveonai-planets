@@ -7,18 +7,22 @@
 <h1>Planet details</h1>
 <hr />
 
-<div>
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-</div>
-<div>
 
+<div>Name: <b>@Model.Name</b></div>
+
+<hr />
+
+<h4>Planet Properties</h4>
+<ul class="list-group">
+    @foreach (var propertyValue in Model.PropertyValues)
+    {
+        <li class="list-group-item">
+            <div><b>@propertyValue.PlanetProperty.Name:</b> @propertyValue.Value</div>
+        </li>
+    }
+</ul>
+
+<div class="my-2">
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a> |
     <a asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
