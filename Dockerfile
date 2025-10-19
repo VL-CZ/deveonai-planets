@@ -12,11 +12,14 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Planets.csproj", "Planets/"]
+COPY ["Planets/Planets.csproj", "Planets/"]
+COPY [".config/", ".config/"]
 RUN dotnet restore "./Planets/Planets.csproj"
-WORKDIR "/src/Planets"
+RUN dotnet tool restore --tool-manifest .config/dotnet-tools.json
 COPY . .
-RUN dotnet build "./Planets.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/Planets"
+RUN dotnet build "./Planets.csproj" -c $BUILD_CONFIGURATION
+RUN dotnet ef migrations bundle --configuration $BUILD_CONFIGURATION --no-build --output /app/migrations/ef-bundle --context Planets.Data.ApplicationDbContext
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
@@ -27,4 +30,6 @@ RUN dotnet publish "./Planets.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Planets.dll"]
+COPY --from=publish /app/migrations/ef-bundle ./ef-bundle
+ENV DOTNET_ENVIRONMENT=Production
+ENTRYPOINT ["sh", "-c", "./ef-bundle && dotnet Planets.dll"]
